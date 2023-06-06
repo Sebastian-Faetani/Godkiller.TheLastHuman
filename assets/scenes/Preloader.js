@@ -17,6 +17,11 @@ preload() {
     frameHeight: 65,
   });
 
+  this.load.spritesheet("magmaAttack", "./assets/images/magmaAttackSpriteSheet.png", {
+    frameWidth: 59,
+    frameHeight: 337,
+  });
+
 }
 
 create() {
