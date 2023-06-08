@@ -11,6 +11,14 @@ preload() {
   this.load.image("platform2Lvl1", "./assets/images/platform2Lvl1.png");
   this.load.image("platform3Lvl1", "./assets/images/platform3Lvl1.png");
   this.load.image("groundPlatformLvl1", "./assets/images/groundPlatformLvl1.png");
+  this.load.image("playerTemp", "./assets/images/playerTemp.png");
+  this.load.image("menuBackground", "./assets/images/menuBackground.png");
+  this.load.image("helpButton", "./assets/images/helpButton.png");
+  this.load.image("creditsButton", "./assets/images/creditsButton.png");
+  this.load.image("startButton", "./assets/images/startButton.png");
+  this.load.image("buttonHover", "./assets/images/playerButtonHovered.png");
+  this.load.video("helpScreen", "./assets/images/helpScreen.mp4");
+  this.load.image("creditsScreen", "./assets/images/creditsScreen.png");
 
   this.load.spritesheet("player", "./assets/images/playerSpriteSheet.png", {
     frameWidth: 39,
@@ -59,7 +67,7 @@ create() {
     frameRate: 20,
   });
 
-  this.scene.start("level1");
+  this.scene.start("menu");
 
 }
 }

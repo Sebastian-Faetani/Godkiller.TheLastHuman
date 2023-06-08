@@ -22,11 +22,14 @@ export default class Level1 extends Phaser.Scene {
     platforms.create(661, 268, "platform3Lvl1").refreshBody();
 
     //adding player
-    this.player = this.physics.add.sprite(400, 300, "player");
+    this.player = this.physics.add.sprite(400, 300, "playerTemp").setScale(0.13);
     this.player.setCollideWorldBounds(true);
 
     //play idle animation
-    this.player.anims.play("idle", true);
+    // this.player.anims.play("idle", true);
+    
+    //add cursors
+    this.cursors = this.input.keyboard.createCursorKeys();
 
     //add colliders
     this.physics.add.collider(this.player, platforms);
@@ -35,6 +38,21 @@ export default class Level1 extends Phaser.Scene {
   }
 
   update() {
+    //Player Movement
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-250);
+    } else {
+      if (this.cursors.right.isDown) {
+        this.player.setVelocityX(250);
+      } else {
+        this.player.setVelocityX(0);
+      }
+    }
+
+    //player Jump
+    if (this.cursors.up.isDown && this.player.body.touching.down) {
+      this.player.setVelocityY(-550);
+    }
    
   }
 }
