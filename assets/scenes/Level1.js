@@ -75,6 +75,36 @@ export default class Level1 extends Phaser.Scene {
     this.arrowUp = this.add.image(0, 0, "arrowUp");
     this.arrowUp.visible = false;
 
+    //Create Pause Menu
+      let pauseMenu = this.add.image(400, 300, "pauseMenu").setInteractive().setDepth(1);
+      let continueButton = this.add.image(400, 230, "continueButton").setInteractive().setDepth(1);
+      let muteButtonOn = this.add.image(410, 290, "muteButtonOn").setInteractive().setDepth(1);
+      let exitButton = this.add.image(400, 370, "exitButton").setInteractive().setDepth(1);
+
+      pauseMenu.visible = false;
+      continueButton.visible = false;
+      muteButtonOn.visible = false;
+      exitButton.visible = false;
+
+      this.input.keyboard.on("keydown", function (event) {
+        if (event.key === "Escape") {
+          this.scene.pause();
+          pauseMenu.visible = true;
+          continueButton.visible = true;
+          muteButtonOn.visible = true;
+          exitButton.visible = true;
+
+        }
+      }, this);
+      
+      continueButton.on("pointerdown", () => {
+        pauseMenu.visible = false;
+        continueButton.visible = false;
+        muteButtonOn.visible = false;
+        exitButton.visible = false;
+        this.scene.resume();
+        }, this);
+
   }
 
  
