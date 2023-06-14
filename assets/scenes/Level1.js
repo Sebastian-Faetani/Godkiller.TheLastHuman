@@ -4,13 +4,10 @@ export default class Level1 extends Phaser.Scene {
   }
 
   init() {
-      this.playerSurvived = false;
-
-
+    this.playerSurvived = false;
   }
 
   create() {
-    
     //Added BackGround
     this.add.image(400, 300, "backGroundLvl1");
 
@@ -19,8 +16,11 @@ export default class Level1 extends Phaser.Scene {
     platforms.create(400, 513, "groundPlatformLvl1").refreshBody().setDepth(1);
 
     //add magma attack
-    this.magmaAttack = this.physics.add.staticGroup();
-    
+    this.magmaAttack = this.physics.add.group({
+      immovable: true,
+      allowGravity: false,
+    });
+
     //magma event
     this.time.addEvent({
       delay: 1000,
@@ -28,7 +28,6 @@ export default class Level1 extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
-
 
     //add platforms
     platforms.create(126, 383, "platform1Lvl1").refreshBody();
@@ -40,19 +39,13 @@ export default class Level1 extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
 
     this.player.anims.play("idle", true);
-    
+
     //add cursors
     this.cursors = this.input.keyboard.createCursorKeys();
 
     //add colliders
     this.physics.add.collider(this.player, platforms);
-    this.physics.add.overlap(
-      this.player, 
-      this.magmaAttack,
-      // this.magmaKill(),
-      // null,
-      // this
-      );
+    this.physics.add.overlap(this.player, this.magmaAttack);
 
     //add timer
     this.time.addEvent({
@@ -76,38 +69,58 @@ export default class Level1 extends Phaser.Scene {
     this.arrowUp.visible = false;
 
     //Create Pause Menu
-      let pauseMenu = this.add.image(400, 300, "pauseMenu").setInteractive().setDepth(1);
-      let continueButton = this.add.image(400, 230, "continueButton").setInteractive().setDepth(1);
-      let muteButtonOn = this.add.image(410, 290, "muteButtonOn").setInteractive().setDepth(1);
-      let exitButton = this.add.image(400, 370, "exitButton").setInteractive().setDepth(1);
+    let pauseMenu = this.add
+      .image(400, 300, "pauseMenu")
+      .setInteractive()
+      .setDepth(1);
+    let continueButton = this.add
+      .image(400, 230, "continueButton")
+      .setInteractive()
+      .setDepth(1);
+    let muteButtonOn = this.add
+      .image(410, 290, "muteButtonOn")
+      .setInteractive()
+      .setDepth(1);
+    let exitButton = this.add
+      .image(400, 370, "exitButton")
+      .setInteractive()
+      .setDepth(1);
 
-      pauseMenu.visible = false;
-      continueButton.visible = false;
-      muteButtonOn.visible = false;
-      exitButton.visible = false;
+    pauseMenu.visible = false;
+    continueButton.visible = false;
+    muteButtonOn.visible = false;
+    exitButton.visible = false;
 
-      this.input.keyboard.on("keydown", function (event) {
+    this.input.keyboard.on(
+      "keydown",
+      function (event) {
         if (event.key === "Escape") {
           this.scene.pause();
           pauseMenu.visible = true;
           continueButton.visible = true;
           muteButtonOn.visible = true;
           exitButton.visible = true;
-
         }
-      }, this);
-      
-      continueButton.on("pointerdown", () => {
+      },
+      this
+    );
+
+    continueButton.on(
+      "pointerdown",
+      () => {
         pauseMenu.visible = false;
         continueButton.visible = false;
         muteButtonOn.visible = false;
         exitButton.visible = false;
         this.scene.resume();
-        }, this);
+      },
+      this
+    );
 
+    this.lastX = 800;
+    //stoping overlap between different attacks
   }
 
- 
   update() {
     // Player Movement
     if (this.cursors.left.isDown) {
@@ -126,7 +139,7 @@ export default class Level1 extends Phaser.Scene {
         this.player.anims.play("idle", true);
       }
     }
-  
+
     // Player Jump
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-550);
@@ -141,76 +154,84 @@ export default class Level1 extends Phaser.Scene {
   }
 
   addMagma() {
-   //random x position
-   const randomX = Phaser.Math.RND.between(50, 750);
+    //random x position
+    const randomX = Phaser.Math.RND.between(50, 750);
+    let magma;
 
-   const magma = this.magmaAttack.create(randomX, 680, "magmaAttack").setScale(0.11).setSize(59, 2000);
-
-  //arrow appears above magma attack
-  const showAlertArrow = () => {
-    const flashDuration = 200; // Duration of each flash in milliseconds
-    const totalFlashes = 2; // Total number of flashes
-    let flashCount = 0;
-
-    const flashArrow = () => {
-      flashCount++;
-
-      if (flashCount <= totalFlashes) {
-        this.arrowUp.setPosition(randomX, 450);
-        this.arrowUp.setVisible(true);
-
-        this.time.delayedCall(flashDuration, () => {
-          this.arrowUp.setVisible(false);
-          this.time.delayedCall(flashDuration, flashArrow);
-        });
-      } else {
-        this.time.delayedCall(flashDuration, () => {
-          // Start magma attack after arrow finishes flashing
-          this.startMagmaAttack(magma);
-        });
+    
+    if (!this.lastX) {
+      magma = this.magmaAttack
+        .create(randomX, 680, "magmaAttack")
+        .setScale(0.11)
+        .setSize(590, 3200);
+        
+    } else {
+      let result = randomX - this.lastX;
+      if (result < 100) {
+        magma = this.magmaAttack
+          .create(randomX, 680, "magmaAttack")
+          .setScale(0.11)
+          .setSize(590, 3770);
       }
+    }
+    this.lastX = randomX;
+
+    //arrow appears above magma attack
+    const showAlertArrow = (m) => {
+      const flashDuration = 200; // Duration of each flash in milliseconds
+      const totalFlashes = 2; // Total number of flashes
+      let flashCount = 0;
+
+      const flashArrow = () => {
+        flashCount++;
+
+        if (flashCount <= totalFlashes) {
+          this.arrowUp.setPosition(randomX, 450);
+          this.arrowUp.setVisible(true);
+
+          this.time.delayedCall(flashDuration, () => {
+            this.arrowUp.setVisible(false);
+            this.time.delayedCall(flashDuration, flashArrow);
+          });
+        } else {
+          this.time.delayedCall(flashDuration, () => {
+            // Start magma attack after arrow finishes flashing
+            console.log(m)
+            this.startMagmaAttack(m);
+          });
+        }
+      };
+
+      flashArrow();
     };
-
-    flashArrow();
-  };
-
-  showAlertArrow();
-
-  }    
+    console.log(magma)
+    if (magma) showAlertArrow(magma);
+  }
 
   startMagmaAttack(magma) {
+    const randomDuration = Phaser.Math.RND.between(700, 3000);
     const startY = 680;
     const targetY = 300;
-    const duration = 3000;
-  
+    const duration = randomDuration;
+
     this.tweens.add({
       targets: magma,
       y: targetY,
-      duration: duration / 2,
+      duration: duration,
       ease: "Linear",
+      yoyo: true,
       onComplete: () => {
-        this.tweens.add({
-          targets: magma,
-          y: startY,
-          duration: duration / 2,
-          ease: "Linear",
-          onComplete: () => {
-            magma.destroy();
-          },
-        });
+        magma.destroy();
       },
       loop: false,
     });
   }
-  
-    onSecond() {
-      this.timer--;
-      this.timerText.setText(this.timer);
-      if (this.timer <= 0) {
-        this.playerSurvived = true;
-      }
+
+  onSecond() {
+    this.timer--;
+    this.timerText.setText(this.timer);
+    if (this.timer <= 0) {
+      this.playerSurvived = true;
     }
-    
   }
-
-
+}

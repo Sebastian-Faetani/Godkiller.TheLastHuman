@@ -74,7 +74,7 @@ create() {
     frameRate: 10,
   });
 
-  this.scene.start("level1");
+  this.scene.start("menu");
 
 }
 }
