@@ -1,10 +1,18 @@
 export default class Level1 extends Phaser.Scene {
+  numLives;
+  heartsFull;
+  heartsHalf;
+  deathScreen;
+  retryButton;
+  exitButton;
   constructor() {
     super("level1");
   }
 
   init() {
     this.playerSurvived = false;
+    this.numLives = 3;
+    this.playerDead = false;
   }
 
   create() {
@@ -23,7 +31,7 @@ export default class Level1 extends Phaser.Scene {
 
     //magma event
     this.time.addEvent({
-      delay: 1000,
+      delay: 200,
       callback: this.addMagma,
       callbackScope: this,
       loop: true,
@@ -45,7 +53,13 @@ export default class Level1 extends Phaser.Scene {
 
     //add colliders
     this.physics.add.collider(this.player, platforms);
-    this.physics.add.overlap(this.player, this.magmaAttack);
+    this.physics.add.overlap(
+      this.player,
+      this.magmaAttack,
+      this.characterHit.bind(this),
+      null,
+      this
+      );
 
     //add timer
     this.time.addEvent({
@@ -68,57 +82,46 @@ export default class Level1 extends Phaser.Scene {
     this.arrowUp = this.add.image(0, 0, "arrowUp");
     this.arrowUp.visible = false;
 
-    //Create Pause Menu
-    let pauseMenu = this.add
-      .image(400, 300, "pauseMenu")
-      .setInteractive()
-      .setDepth(1);
-    let continueButton = this.add
-      .image(400, 230, "continueButton")
-      .setInteractive()
-      .setDepth(1);
-    let muteButtonOn = this.add
-      .image(410, 290, "muteButtonOn")
-      .setInteractive()
-      .setDepth(1);
-    let exitButton = this.add
-      .image(400, 370, "exitButton")
-      .setInteractive()
-      .setDepth(1);
+    //Create Mute button
+    let isMusicMuted = false;
+    let musicOn = this.add.image(770, 515, "musicOn").setInteractive().setDepth(1);
+    
+    musicOn.on("pointerdown", () => {
+      if (isMusicMuted){
+        // music.play();
+        musicOn.setTexture("musicOn");
+        isMusicMuted = false;
+      } else {
+        //music.pause();
+        musicOn.setTexture("musicOff");
+        isMusicMuted = true;
+      }
+    });
 
-    pauseMenu.visible = false;
-    continueButton.visible = false;
-    muteButtonOn.visible = false;
-    exitButton.visible = false;
+    //add lifes
+    this.heartsEmpty= this.add.image(100, 110, "heartsSpriteDead").setScale(0.14).setDepth(1);
+    this.heartsHalf = this.add.image(100, 110, "heartsSpriteOneLeft").setScale(0.14).setDepth(1);
+    this.heartsFull = this.add.image(100, 110, "heartsSpriteFull").setScale(0.14).setDepth(1);
+    
+    //add death screen and quit or restart
+    this.deathScreen = this.add.image(400, 300, "deathScreen").setDepth(1);
+    this.deathScreen.visible = false;
 
-    this.input.keyboard.on(
-      "keydown",
-      function (event) {
-        if (event.key === "Escape") {
-          this.scene.pause();
-          pauseMenu.visible = true;
-          continueButton.visible = true;
-          muteButtonOn.visible = true;
-          exitButton.visible = true;
-        }
-      },
-      this
-    );
+    this.retryButton = this.add.image(400, 300, "retryButton").setInteractive().setDepth(1);
+    this.retryButton.visible = false;
+    this.retryButton.on("pointerdown", () => {
+      this.scene.restart();
+    });
 
-    continueButton.on(
-      "pointerdown",
-      () => {
-        pauseMenu.visible = false;
-        continueButton.visible = false;
-        muteButtonOn.visible = false;
-        exitButton.visible = false;
-        this.scene.resume();
-      },
-      this
-    );
+    this.exitButton = this.add.image(400, 350, "exitButton").setInteractive().setDepth(1);
+    this.exitButton.visible = false;
+    this.exitButton.on("pointerdown", () => {
+      this.scene.start("menu");
+    });
 
-    this.lastX = 800;
-    //stoping overlap between different attacks
+    //player invulnerable
+    this.playerInvulnerable = false;
+    
   }
 
   update() {
@@ -151,69 +154,88 @@ export default class Level1 extends Phaser.Scene {
         this.player.anims.play("up", true);
       }
     }
+
+    //player death
+    if (this.playerDead) {
+      this.player.anims.stop();
+      this.player.anims.play("dead", true);
+      this.player.setVelocity(0, 0);
+     
+
+    }
+
   }
 
+  
+
   addMagma() {
-    //random x position
+    // Random x position
     const randomX = Phaser.Math.RND.between(50, 750);
     let magma;
-
-    
+  
     if (!this.lastX) {
-      magma = this.magmaAttack
-        .create(randomX, 680, "magmaAttack")
-        .setScale(0.11)
-        .setSize(590, 3200);
-        
+      magma = this.createMagmaAttack(randomX);
     } else {
       let result = randomX - this.lastX;
-      if (result < 100) {
-        magma = this.magmaAttack
-          .create(randomX, 680, "magmaAttack")
-          .setScale(0.11)
-          .setSize(590, 3770);
+      if (result < 65) {
+        magma = this.createMagmaAttack(randomX);
       }
     }
     this.lastX = randomX;
-
-    //arrow appears above magma attack
-    const showAlertArrow = (m) => {
-      const flashDuration = 200; // Duration of each flash in milliseconds
-      const totalFlashes = 2; // Total number of flashes
-      let flashCount = 0;
-
-      const flashArrow = () => {
-        flashCount++;
-
-        if (flashCount <= totalFlashes) {
-          this.arrowUp.setPosition(randomX, 450);
-          this.arrowUp.setVisible(true);
-
-          this.time.delayedCall(flashDuration, () => {
-            this.arrowUp.setVisible(false);
-            this.time.delayedCall(flashDuration, flashArrow);
-          });
-        } else {
-          this.time.delayedCall(flashDuration, () => {
-            // Start magma attack after arrow finishes flashing
-            console.log(m)
-            this.startMagmaAttack(m);
-          });
-        }
-      };
-
-      flashArrow();
-    };
-    console.log(magma)
-    if (magma) showAlertArrow(magma);
+  
+    if (magma) {
+      this.showAlertArrow(randomX, 450, () => {
+        this.startMagmaAttack(magma);
+      });
+    }
   }
-
+  
+  createMagmaAttack(x) {
+    const existingMagma = this.magmaAttack.getChildren();
+    const overlappingMagma = existingMagma.find((magma) => Math.abs(magma.x - x) < 65);
+  
+    if (!overlappingMagma) {
+      const newMagma = this.magmaAttack
+        .create(x, 680, "magmaAttack")
+        .setScale(0.11)
+        .setSize(590, 3200);
+  
+      return newMagma;
+    }
+  
+    return null;
+  }
+  
+  showAlertArrow(x, y, callback) {
+    const flashDuration = 200; // Duration of each flash in milliseconds
+    const totalFlashes = 2; // Total number of flashes
+    let flashCount = 0;
+  
+    const flashArrow = () => {
+      flashCount++;
+  
+      if (flashCount <= totalFlashes) {
+        this.arrowUp.setPosition(x, y);
+        this.arrowUp.setVisible(true);
+  
+        this.time.delayedCall(flashDuration, () => {
+          this.arrowUp.setVisible(false);
+          this.time.delayedCall(flashDuration, flashArrow);
+        });
+      } else {
+        this.time.delayedCall(flashDuration, callback);
+      }
+    };
+  
+    flashArrow();
+  }
+  
   startMagmaAttack(magma) {
-    const randomDuration = Phaser.Math.RND.between(700, 3000);
+    const randomDuration = Phaser.Math.RND.between(700, 2000);
     const startY = 680;
     const targetY = 300;
     const duration = randomDuration;
-
+  
     this.tweens.add({
       targets: magma,
       y: targetY,
@@ -226,6 +248,33 @@ export default class Level1 extends Phaser.Scene {
       loop: false,
     });
   }
+
+  characterHit() {
+    if (!this.playerInvulnerable) {
+      this.numLives--;
+      
+      if ( this.numLives === 2) {
+        this.heartsFull.setVisible(false);
+      } else if ( this.numLives === 1) {
+        this.heartsHalf.setVisible(false);
+        this.playerDead = true;
+        this.deathScreen.setVisible(true);
+        this.retryButton.setVisible(true);
+        this.exitButton.setVisible(true);
+      }
+        this.playerInvulnerable = true;
+        this.time.addEvent({
+          delay: 2000,
+          callback: () => {
+            this.playerInvulnerable = false;
+        },
+        callbackScope: this,
+        loop: false
+      });
+    
+  }
+}
+
 
   onSecond() {
     this.timer--;

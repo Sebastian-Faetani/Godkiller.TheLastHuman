@@ -20,11 +20,14 @@ preload() {
   this.load.image("creditsScreen", "./assets/images/creditsScreen.png");
   this.load.image("magmaAttack", "./assets/images/magmaAttack.png");
   this.load.image("arrowUp", "./assets/images/arrowUp.png");
-  this.load.image("pauseMenu", "./assets/images/pauseMenu.png");
-  this.load.image("continueButton", "./assets/images/continueButton.png");
+  this.load.image("musicOn", "./assets/images/musicOn.png");
+  this.load.image("musicOff", "./assets/images/musicOff.png");
   this.load.image("exitButton", "./assets/images/exitButton.png");
-  this.load.image("muteButtonOff", "./assets/images/muteButtonOff.png");
-  this.load.image("muteButtonOn", "./assets/images/muteButtonOn.png");
+  this.load.image("heartsSpriteFull", "./assets/images/heartsSpriteFull.png");
+  this.load.image("heartsSpriteOneLeft", "./assets/images/heartsSpriteOneLeft.png");
+  this.load.image("heartsSpriteDead", "./assets/images/heartsSpriteDead.png");
+  this.load.image("retryButton", "./assets/images/retryButton.png");
+  this.load.image("deathScreen", "./assets/images/deathScreen.png");
 
   this.load.spritesheet("player", "./assets/images/playerSpriteSheet.png", {
     frameWidth: 390,
@@ -71,6 +74,12 @@ create() {
   this.anims.create({
     key: "up",
     frames: [{ key: "player", frame: 12 }],
+    frameRate: 10,
+  });
+
+  this.anims.create({
+    key: "dead",
+    frames: this.anims.generateFrameNumbers("player", { start: 13, end: 29 }),
     frameRate: 10,
   });
 
