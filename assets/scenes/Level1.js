@@ -12,7 +12,7 @@ export default class Level1 extends Phaser.Scene {
   init() {
     this.playerSurvived = false;
     this.numLives = 3;
-    this.playerDead = false;
+    
   }
 
   create() {
@@ -121,12 +121,30 @@ export default class Level1 extends Phaser.Scene {
 
     //player invulnerable
     this.playerInvulnerable = false;
+
+    this.playerDead = false;
     
   }
 
   update() {
     // Player Movement
-    if (this.cursors.left.isDown) {
+    if(this.numLives <= 1){
+          this.timer = stop;
+          this.player.setVelocity(0, 0)
+          if (this.numLives <= 0) {
+            setTimeout(() => {this.player.anims.pause()
+            }, 1600);
+          } else if (this.numLives == 1) {
+            this.player.anims.play('dead', true);
+            this.numLives -= 1;
+          }
+          setTimeout(() => {
+            this.playerDead = true;
+            this.deathScreen.setVisible(true);
+            this.retryButton.setVisible(true);
+            this.exitButton.setVisible(true);
+          });
+      } else if (this.cursors.left.isDown) {
       this.player.setVelocityX(-250);
       if (this.player.body.touching.down) {
         this.player.anims.play("left", true);
@@ -142,7 +160,7 @@ export default class Level1 extends Phaser.Scene {
         this.player.anims.play("idle", true);
       }
     }
-
+    
     // Player Jump
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-550);
@@ -154,19 +172,9 @@ export default class Level1 extends Phaser.Scene {
         this.player.anims.play("up", true);
       }
     }
-
-    //player death
-    if (this.playerDead) {
-      this.player.anims.stop();
-      this.player.anims.play("dead", true);
-      this.player.setVelocity(0, 0);
-     
-
-    }
-
   }
-
   
+  //----------------------Magma Attack--------------------------------------------
 
   addMagma() {
     // Random x position
@@ -249,6 +257,8 @@ export default class Level1 extends Phaser.Scene {
     });
   }
 
+  //----------------------------------------------------------------------------
+
   characterHit() {
     if (!this.playerInvulnerable) {
       this.numLives--;
@@ -258,9 +268,6 @@ export default class Level1 extends Phaser.Scene {
       } else if ( this.numLives === 1) {
         this.heartsHalf.setVisible(false);
         this.playerDead = true;
-        this.deathScreen.setVisible(true);
-        this.retryButton.setVisible(true);
-        this.exitButton.setVisible(true);
       }
         this.playerInvulnerable = true;
         this.time.addEvent({
@@ -274,7 +281,6 @@ export default class Level1 extends Phaser.Scene {
     
   }
 }
-
 
   onSecond() {
     this.timer--;

@@ -19,7 +19,11 @@ preload() {
   this.load.video("helpScreen", "./assets/images/helpScreen.mp4");
   this.load.image("creditsScreen", "./assets/images/creditsScreen.png");
   this.load.image("magmaAttack", "./assets/images/magmaAttack.png");
+  this.load.image("lightAttack", "./assets/images/lightAttack.png");
+  this.load.image("electricAttack", "./assets/images/electricAttack.png");
   this.load.image("arrowUp", "./assets/images/arrowUp.png");
+  this.load.image("arrowLeft", "./assets/images/arrowLeft.png");
+  this.load.image("arrowDown", "./assets/images/arrowDown.png");
   this.load.image("musicOn", "./assets/images/musicOn.png");
   this.load.image("musicOff", "./assets/images/musicOff.png");
   this.load.image("exitButton", "./assets/images/exitButton.png");
@@ -30,6 +34,11 @@ preload() {
   this.load.image("deathScreen", "./assets/images/deathScreen.png");
 
   this.load.spritesheet("player", "./assets/images/playerSpriteSheet.png", {
+    frameWidth: 390,
+    frameHeight: 650,
+  });
+
+  this.load.spritesheet("playerDeath", "./assets/images/deathSpriteSheet.png", {
     frameWidth: 390,
     frameHeight: 650,
   });
@@ -79,11 +88,13 @@ create() {
 
   this.anims.create({
     key: "dead",
-    frames: this.anims.generateFrameNumbers("player", { start: 13, end: 29 }),
+    frames: this.anims.generateFrameNumbers("playerDeath", { start: 0, end: 16 }),
     frameRate: 10,
+    repeat: 1,
+    hideOnComplete: false,
   });
 
-  this.scene.start("menu");
+  this.scene.start("level3");
 
 }
 }
