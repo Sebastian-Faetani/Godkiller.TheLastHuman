@@ -41,6 +41,11 @@ export default class Level1 extends Phaser.Scene {
       allowGravity: false,
     });
 
+    this.nextLevelArrow = this.physics.add.group({
+      immovable: true,
+      allowGravity: false,
+    });
+
     //magma event
     this.time.addEvent({
       delay: 200,
@@ -89,13 +94,21 @@ export default class Level1 extends Phaser.Scene {
       this
       );
 
-      this.physics.add.overlap(
-        this.player,
-        this.lightAttack,
-        this.characterHit.bind(this),
-        null,
-        this
-        );
+    this.physics.add.overlap(
+      this.player,
+      this.lightAttack,
+      this.characterHit.bind(this),
+      null,
+      this
+      );
+
+    this.physics.add.overlap(
+      this.player,
+      this.nextLevelArrow,
+      this.NextLevel,
+      null,
+      this
+      );
   
 
     //add timer
@@ -107,7 +120,7 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add timer on screen
-    this.timer = 60;
+    this.timer = 10;
     this.timerText = this.add.text(720, 50, this.timer, {
       fontSize: "64px",
       fontFamily: "impact",
@@ -122,8 +135,8 @@ export default class Level1 extends Phaser.Scene {
     this.arrowLeft = this.add.image(0, 0, "arrowLeft");
     this.arrowLeft.visible = false;
 
-    this.arrowUp = this.add.image(0, 0, "arrowDown");
-    this.arrowUp.visible = false;
+    this.arrowDown = this.add.image(0, 0, "arrowDown");
+    this.arrowDown.visible = false;
 
     //Create Mute button
     let isMusicMuted = false;
@@ -167,6 +180,10 @@ export default class Level1 extends Phaser.Scene {
 
     this.playerDead = false;
     
+    //add next level arrow
+    this.nextLevelArrow.create(675, 425, "nextLevelArrow");
+    this.nextLevelArrow.setVisible(false);
+        
   }
 
   update() {
@@ -402,7 +419,7 @@ export default class Level1 extends Phaser.Scene {
       this.lastX = randomX;
     
       if (electric) {
-        this.showAlertArrow(randomX, 100, () => {
+        this.showDownAlertArrow(randomX, 100, () => {
           this.startElectricAttack(electric);
         });
       }
@@ -491,11 +508,27 @@ export default class Level1 extends Phaser.Scene {
   }
 }
 
+  NextLevel(player, nextLevelArrow) {
+    if (this.isNextLevelEnabled) {
+      this.scene.start("menu");
+    }
+  }
+
+  showNextLevelArrow() {
+    this.nextLevelArrow.setVisible(this.isNextLevelEnabled);
+  }
+
   onSecond() {
     this.timer--;
     this.timerText.setText(this.timer);
-    if (this.timer <= 0) {
+      if (this.timer <= 0) {
       this.playerSurvived = true;
+      this.magmaAttack.clear(true, true);
+      this.time.removeAllEvents();
+      this.isNextLevelEnabled = true;
+      this.showNextLevelArrow();
     }
   }
 }
+
+

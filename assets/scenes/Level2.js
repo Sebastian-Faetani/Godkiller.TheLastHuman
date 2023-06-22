@@ -17,11 +17,15 @@ export default class Level1 extends Phaser.Scene {
 
   create() {
     //Added BackGround
-    this.add.image(400, 300, "backGroundLvl1");
+    let background = this.add.video(400, 300, "backGroundLvl2");
+    background.play("loop");
+
+    //add trainLook
+    this.add.image(400, 386, "trainLookLvl2");
 
     //add ground
     let platforms = this.physics.add.staticGroup();
-    platforms.create(400, 513, "groundPlatformLvl1").refreshBody().setDepth(1);
+    platforms.create(400, 513, "groundPlatformLvl2").refreshBody().setDepth(1);
 
     //add magma attack
     this.magmaAttack = this.physics.add.group({
@@ -34,6 +38,13 @@ export default class Level1 extends Phaser.Scene {
       immovable: true,
       allowGravity: false,
     });
+
+    
+  this.nextLevelArrow = this.physics.add.group({
+    immovable: true,
+    allowGravity: false,
+  });
+
 
     //magma event
     this.time.addEvent({
@@ -52,9 +63,9 @@ export default class Level1 extends Phaser.Scene {
         });
 
     //add platforms
-    platforms.create(126, 383, "platform1Lvl1").refreshBody();
-    platforms.create(392, 295, "platform2Lvl1").refreshBody();
-    platforms.create(661, 268, "platform3Lvl1").refreshBody();
+    platforms.create(143.5, 373, "platform1Lvl2").refreshBody();
+    platforms.create(671.5, 373, "platform1Lvl2").refreshBody();
+    platforms.create(400, 279, "platform2Lvl2").refreshBody();
 
     //adding player
     this.player = this.physics.add.sprite(400, 430, "player").setScale(0.1);
@@ -75,13 +86,21 @@ export default class Level1 extends Phaser.Scene {
       this
       );
 
-      this.physics.add.overlap(
-        this.player,
-        this.lightAttack,
-        this.characterHit.bind(this),
-        null,
-        this
-        );
+    this.physics.add.overlap(
+      this.player,
+      this.lightAttack,
+      this.characterHit.bind(this),
+      null,
+      this
+      );
+
+    this.physics.add.overlap(
+      this.player,
+      this.nextLevelArrow,
+      this.NextLevel,
+      null,
+      this
+      );
   
 
     //add timer
@@ -93,7 +112,7 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add timer on screen
-    this.timer = 60;
+    this.timer = 1;
     this.timerText = this.add.text(720, 50, this.timer, {
       fontSize: "64px",
       fontFamily: "impact",
@@ -149,6 +168,10 @@ export default class Level1 extends Phaser.Scene {
     this.playerInvulnerable = false;
 
     this.playerDead = false;
+
+    //add next level arrow
+    this.nextLevelArrow.create(675, 425, "nextLevelArrow");
+    this.nextLevelArrow.setVisible(false);
     
   }
 
@@ -218,7 +241,7 @@ export default class Level1 extends Phaser.Scene {
     this.lastX = randomX;
   
     if (magma) {
-      this.showAlertArrow(randomX, 450, () => {
+      this.showAlertArrow(randomX, 430, () => {
         this.startMagmaAttack(magma);
       });
     }
@@ -391,11 +414,27 @@ export default class Level1 extends Phaser.Scene {
   }
 }
 
+  NextLevel(player, nextLevelArrow) {
+    if (this.isNextLevelEnabled) {
+      this.scene.start("level3");
+    }
+  }
+
+  showNextLevelArrow() {
+    this.nextLevelArrow.setVisible(this.isNextLevelEnabled);
+
+  }
+
+
   onSecond() {
     this.timer--;
     this.timerText.setText(this.timer);
     if (this.timer <= 0) {
       this.playerSurvived = true;
+      this.magmaAttack.clear(true, true);
+      this.time.removeAllEvents();
+      this.isNextLevelEnabled = true;
+      this.showNextLevelArrow();
     }
   }
 }
