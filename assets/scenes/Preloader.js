@@ -18,6 +18,18 @@ preload() {
   this.load.image("platform2Lvl2", "./assets/images/platform2Lvl2.png");
   this.load.image("groundPlatformLvl2", "./assets/images/groundPlatformLvl2.png");
 
+  this.load.video("backGroundLvl3", "./assets/images/backGroundLvl3.mp4");
+  this.load.image("parallaxLvl3", "./assets/images/parallaxLvl3.png");
+  this.load.image("platform1Lvl3", "./assets/images/platform1Lvl3.png");
+  this.load.image("platform2Lvl3", "./assets/images/platform2Lvl3.png");
+  this.load.image("platform3Lvl3", "./assets/images/platform3Lvl3.png");
+  this.load.image("groundPlatformLvl3", "./assets/images/groundPlatformLvl3.png");
+
+  this.load.image("backGroundSecretLvl", "./assets/images/backGroundSecretLvl.png");
+  this.load.image("platform1SecretLvl", "./assets/images/platform1SecretLvl.png");
+  this.load.image("platform2SecretLvl", "./assets/images/platform2SecretLvl.png");
+  this.load.image("groundPlatformSecretLvl", "./assets/images/groundPlatformSecretLvl.png");
+
   this.load.image("menuBackground", "./assets/images/menuBackground.png");
   this.load.image("helpButton", "./assets/images/helpButton.png");
   this.load.image("creditsButton", "./assets/images/creditsButton.png");
@@ -109,7 +121,7 @@ create() {
     hideOnComplete: false,
   });
 
-  this.scene.start("level2");
+  this.scene.start("secretLevel");
 
 }
 }

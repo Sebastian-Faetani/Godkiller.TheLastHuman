@@ -17,11 +17,15 @@ export default class Level1 extends Phaser.Scene {
 
   create() {
     //Added BackGround
-    this.add.image(400, 300, "backGroundLvl1");
+    let background = this.add.video(400, 300, "backGroundLvl3");
+    background.play("loop");
+
+    //add parallax
+    this.add.image(400, 300, "parallaxLvl3");
 
     //add ground
     let platforms = this.physics.add.staticGroup();
-    platforms.create(400, 513, "groundPlatformLvl1").refreshBody().setDepth(1);
+    platforms.create(400, 513, "groundPlatformLvl3").refreshBody().setDepth(1);
 
     //add magma attack
     this.magmaAttack = this.physics.add.group({
@@ -71,9 +75,9 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add platforms
-    platforms.create(126, 383, "platform1Lvl1").refreshBody();
-    platforms.create(392, 295, "platform2Lvl1").refreshBody();
-    platforms.create(661, 268, "platform3Lvl1").refreshBody();
+    platforms.create(155, 295, "platform1Lvl3").refreshBody();
+    platforms.create(611, 295, "platform2Lvl3").refreshBody();
+    platforms.create(390.5, 383, "platform3Lvl3").refreshBody();
 
     //adding player
     this.player = this.physics.add.sprite(400, 430, "player").setScale(0.1);
@@ -120,7 +124,7 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add timer on screen
-    this.timer = 10;
+    this.timer = 1;
     this.timerText = this.add.text(720, 50, this.timer, {
       fontSize: "64px",
       fontFamily: "impact",
