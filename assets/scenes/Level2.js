@@ -12,7 +12,7 @@ export default class Level1 extends Phaser.Scene {
   init() {
     this.playerSurvived = false;
     this.numLives = 3;
-    
+    this.isDemonEnabled = false;
   }
 
   create() {
@@ -39,12 +39,15 @@ export default class Level1 extends Phaser.Scene {
       allowGravity: false,
     });
 
-    
-  this.nextLevelArrow = this.physics.add.group({
-    immovable: true,
-    allowGravity: false,
-  });
+    this.nextLevelArrow = this.physics.add.group({
+      immovable: true,
+      allowGravity: false,
+    });
 
+    this.demon = this.physics.add.group({
+      immovable: true,
+      allowGravity: false,
+    });
 
     //magma event
     this.time.addEvent({
@@ -60,7 +63,7 @@ export default class Level1 extends Phaser.Scene {
       callback: this.addLight,
       callbackScope: this,
       loop: true,
-        });
+    });
 
     //add platforms
     platforms.create(143.5, 373, "platform1Lvl2").refreshBody();
@@ -84,7 +87,7 @@ export default class Level1 extends Phaser.Scene {
       this.characterHit.bind(this),
       null,
       this
-      );
+    );
 
     this.physics.add.overlap(
       this.player,
@@ -92,7 +95,7 @@ export default class Level1 extends Phaser.Scene {
       this.characterHit.bind(this),
       null,
       this
-      );
+    );
 
     this.physics.add.overlap(
       this.player,
@@ -100,8 +103,15 @@ export default class Level1 extends Phaser.Scene {
       this.NextLevel,
       null,
       this
-      );
-  
+    );
+
+    this.physics.add.overlap(
+      this.player,
+      this.demon,
+      this.secretLevel,
+      null,
+      this
+    );
 
     //add timer
     this.time.addEvent({
@@ -112,7 +122,7 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add timer on screen
-    this.timer = 60;
+    this.timer = 15;
     this.timerText = this.add.text(720, 50, this.timer, {
       fontSize: "64px",
       fontFamily: "impact",
@@ -127,40 +137,64 @@ export default class Level1 extends Phaser.Scene {
     this.arrowLeft = this.add.image(0, 0, "arrowLeft");
     this.arrowLeft.visible = false;
 
+    //add music
+    this.level2Music = this.sound.add("level2Music", { loop: true , volume: 0.15 });
+    this.level2Music.play();
+
     //Create Mute button
     let isMusicMuted = false;
-    let musicOn = this.add.image(770, 515, "musicOn").setInteractive().setDepth(1);
-    
+    let musicOn = this.add
+      .image(770, 530, "musicOn")
+      .setInteractive()
+      .setDepth(1);
+
     musicOn.on("pointerdown", () => {
-      if (isMusicMuted){
-        // music.play();
+      if (isMusicMuted) {
+        this.level2Music.resume();
         musicOn.setTexture("musicOn");
         isMusicMuted = false;
       } else {
-        //music.pause();
+        this.level2Music.pause();
         musicOn.setTexture("musicOff");
         isMusicMuted = true;
       }
     });
 
     //add lifes
-    this.heartsEmpty= this.add.image(100, 110, "heartsSpriteDead").setScale(0.14).setDepth(1);
-    this.heartsHalf = this.add.image(100, 110, "heartsSpriteOneLeft").setScale(0.14).setDepth(1);
-    this.heartsFull = this.add.image(100, 110, "heartsSpriteFull").setScale(0.14).setDepth(1);
-    
+    this.heartsEmpty = this.add
+      .image(100, 110, "heartsSpriteDead")
+      .setScale(0.14)
+      .setDepth(1);
+    this.heartsHalf = this.add
+      .image(100, 110, "heartsSpriteOneLeft")
+      .setScale(0.14)
+      .setDepth(1);
+    this.heartsFull = this.add
+      .image(100, 110, "heartsSpriteFull")
+      .setScale(0.14)
+      .setDepth(1);
+
     //add death screen and quit or restart
     this.deathScreen = this.add.image(400, 300, "deathScreen").setDepth(1);
     this.deathScreen.visible = false;
 
-    this.retryButton = this.add.image(400, 300, "retryButton").setInteractive().setDepth(1);
+    this.retryButton = this.add
+      .image(400, 300, "retryButton")
+      .setInteractive()
+      .setDepth(1);
     this.retryButton.visible = false;
     this.retryButton.on("pointerdown", () => {
+      this.level2Music.stop();
       this.scene.restart();
     });
 
-    this.exitButton = this.add.image(400, 350, "exitButton").setInteractive().setDepth(1);
+    this.exitButton = this.add
+      .image(400, 350, "exitButton")
+      .setInteractive()
+      .setDepth(1);
     this.exitButton.visible = false;
     this.exitButton.on("pointerdown", () => {
+      this.level2Music.stop();
       this.scene.start("menu");
     });
 
@@ -172,28 +206,36 @@ export default class Level1 extends Phaser.Scene {
     //add next level arrow
     this.nextLevelArrow.create(675, 425, "nextLevelArrow");
     this.nextLevelArrow.setVisible(false);
-    
+
+    //add secret level demon
+    this.demon = this.demon
+      .create(143.5, 333, "demon")
+      .setScale(0.1)
+      .refreshBody();
+    this.demon.anims.play("demonIdle", true);
+    this.demon.setVisible(false);
   }
 
   update() {
     // Player Movement
-    if(this.numLives <= 1){
-          this.timer = stop;
-          this.player.setVelocity(0, 0)
-          if (this.numLives <= 0) {
-            setTimeout(() => {this.player.anims.pause()
-            }, 1600);
-          } else if (this.numLives == 1) {
-            this.player.anims.play('dead', true);
-            this.numLives -= 1;
-          }
-          setTimeout(() => {
-            this.playerDead = true;
-            this.deathScreen.setVisible(true);
-            this.retryButton.setVisible(true);
-            this.exitButton.setVisible(true);
-          });
-      } else if (this.cursors.left.isDown) {
+    if (this.numLives <= 1) {
+      this.timer = stop;
+      this.player.setVelocity(0, 0);
+      if (this.numLives <= 0) {
+        setTimeout(() => {
+          this.player.anims.pause();
+        }, 1600);
+      } else if (this.numLives == 1) {
+        this.player.anims.play("dead", true);
+        this.numLives -= 1;
+      }
+      setTimeout(() => {
+        this.playerDead = true;
+        this.deathScreen.setVisible(true);
+        this.retryButton.setVisible(true);
+        this.exitButton.setVisible(true);
+      });
+    } else if (this.cursors.left.isDown) {
       this.player.setVelocityX(-250);
       if (this.player.body.touching.down) {
         this.player.anims.play("left", true);
@@ -209,7 +251,7 @@ export default class Level1 extends Phaser.Scene {
         this.player.anims.play("idle", true);
       }
     }
-    
+
     // Player Jump
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-550);
@@ -222,14 +264,14 @@ export default class Level1 extends Phaser.Scene {
       }
     }
   }
-  
-    //----------------------Magma Attack--------------------------------------------
+
+  //----------------------Magma Attack--------------------------------------------
 
   addMagma() {
     // Random x position
     const randomX = Phaser.Math.RND.between(50, 750);
     let magma;
-  
+
     if (!this.lastX) {
       magma = this.createMagmaAttack(randomX);
     } else {
@@ -239,42 +281,44 @@ export default class Level1 extends Phaser.Scene {
       }
     }
     this.lastX = randomX;
-  
+
     if (magma) {
       this.showAlertArrow(randomX, 430, () => {
         this.startMagmaAttack(magma);
       });
     }
   }
-  
+
   createMagmaAttack(x) {
     const existingMagma = this.magmaAttack.getChildren();
-    const overlappingMagma = existingMagma.find((magma) => Math.abs(magma.x - x) < 65);
-  
+    const overlappingMagma = existingMagma.find(
+      (magma) => Math.abs(magma.x - x) < 65
+    );
+
     if (!overlappingMagma) {
       const newMagma = this.magmaAttack
         .create(x, 680, "magmaAttack")
         .setScale(0.11)
         .setSize(590, 3200);
-  
+
       return newMagma;
     }
-  
+
     return null;
   }
-  
+
   showAlertArrow(x, y, callback) {
     const flashDuration = 200; // Duration of each flash in milliseconds
     const totalFlashes = 2; // Total number of flashes
     let flashCount = 0;
-  
+
     const flashArrow = () => {
       flashCount++;
-  
+
       if (flashCount <= totalFlashes) {
         this.arrowUp.setPosition(x, y);
         this.arrowUp.setVisible(true);
-  
+
         this.time.delayedCall(flashDuration, () => {
           this.arrowUp.setVisible(false);
           this.time.delayedCall(flashDuration, flashArrow);
@@ -283,7 +327,7 @@ export default class Level1 extends Phaser.Scene {
         this.time.delayedCall(flashDuration, callback);
       }
     };
-  
+
     flashArrow();
   }
 
@@ -292,7 +336,7 @@ export default class Level1 extends Phaser.Scene {
     const startY = 680;
     const targetY = 300;
     const duration = randomDuration;
-  
+
     this.tweens.add({
       targets: magma,
       y: targetY,
@@ -308,13 +352,13 @@ export default class Level1 extends Phaser.Scene {
 
   //----------------------------------------------------------------------------
   //----------------------Light Attack--------------------------------------------
-  
+
   startLightAttack(light) {
     const randomDuration = Phaser.Math.RND.between(700, 2000);
     const startX = -70;
     const targetX = 850;
     const duration = randomDuration;
-  
+
     this.tweens.add({
       targets: light,
       x: targetX,
@@ -331,7 +375,7 @@ export default class Level1 extends Phaser.Scene {
     // Random x position
     const randomY = Phaser.Math.RND.between(120, 450);
     let light;
-  
+
     if (!this.lastY) {
       light = this.createLightAttack(randomY);
     } else {
@@ -341,7 +385,7 @@ export default class Level1 extends Phaser.Scene {
       }
     }
     this.lastY = randomY;
-  
+
     if (light) {
       this.showLeftAlertArrow(25, randomY, () => {
         this.startLightAttack(light);
@@ -353,14 +397,14 @@ export default class Level1 extends Phaser.Scene {
     const flashDuration = 200; // Duration of each flash in milliseconds
     const totalFlashes = 2; // Total number of flashes
     let flashCount = 0;
-  
+
     const flashArrow = () => {
       flashCount++;
-  
+
       if (flashCount <= totalFlashes) {
         this.arrowLeft.setPosition(x, y);
         this.arrowLeft.setVisible(true);
-  
+
         this.time.delayedCall(flashDuration, () => {
           this.arrowLeft.setVisible(false);
           this.time.delayedCall(flashDuration, flashArrow);
@@ -369,23 +413,25 @@ export default class Level1 extends Phaser.Scene {
         this.time.delayedCall(flashDuration, callback);
       }
     };
-  
+
     flashArrow();
   }
-  
+
   createLightAttack(y) {
     const existingLight = this.lightAttack.getChildren();
-    const overlappingLight = existingLight.find((light) => Math.abs(light.y - y) < 65);
-  
+    const overlappingLight = existingLight.find(
+      (light) => Math.abs(light.y - y) < 65
+    );
+
     if (!overlappingLight) {
       const newLight = this.lightAttack
         .create(-70, y, "lightAttack")
         .setScale(0.11)
         .setSize(990, 330);
-  
+
       return newLight;
     }
-  
+
     return null;
   }
 
@@ -394,41 +440,58 @@ export default class Level1 extends Phaser.Scene {
   characterHit() {
     if (!this.playerInvulnerable) {
       this.numLives--;
-      
-      if ( this.numLives === 2) {
+
+      if (this.numLives === 2) {
         this.heartsFull.setVisible(false);
-      } else if ( this.numLives === 1) {
+      } else if (this.numLives === 1) {
         this.heartsHalf.setVisible(false);
         this.playerDead = true;
       }
-        this.playerInvulnerable = true;
-        this.time.addEvent({
-          delay: 2000,
-          callback: () => {
-            this.playerInvulnerable = false;
+      this.playerInvulnerable = true;
+      this.time.addEvent({
+        delay: 2000,
+        callback: () => {
+          this.playerInvulnerable = false;
         },
         callbackScope: this,
-        loop: false
+        loop: false,
       });
-    
+    }
   }
-}
 
   NextLevel(player, nextLevelArrow) {
     if (this.isNextLevelEnabled) {
+      this.level2Music.stop();
       this.scene.start("level3");
+    }
+  }
+
+  secretLevel(player, nextLevelArrow) {
+    if (this.isDemonEnabled) {
+      this.level2Music.stop();
+      this.scene.start("secretLevel");
     }
   }
 
   showNextLevelArrow() {
     this.nextLevelArrow.setVisible(this.isNextLevelEnabled);
-
   }
 
+  showDemon() {
+    this.demon.setVisible(this.isDemonEnabled);
+  }
 
   onSecond() {
     this.timer--;
     this.timerText.setText(this.timer);
+    if (this.timer <= 10) {
+      this.isDemonEnabled = true;
+      this.showDemon();
+      if (this.timer <= 5) {
+        this.isDemonEnabled = false;
+        this.showDemon();
+      }
+    }
     if (this.timer <= 0) {
       this.playerSurvived = true;
       this.magmaAttack.clear(true, true);
