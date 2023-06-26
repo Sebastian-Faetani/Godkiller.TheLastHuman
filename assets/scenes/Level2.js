@@ -297,7 +297,7 @@ export default class Level1 extends Phaser.Scene {
 
     if (!overlappingMagma) {
       const newMagma = this.magmaAttack
-        .create(x, 680, "magmaAttack")
+        .create(x, 700, "magmaAttack")
         .setScale(0.11)
         .setSize(590, 3200);
 
@@ -495,6 +495,7 @@ export default class Level1 extends Phaser.Scene {
     if (this.timer <= 0) {
       this.playerSurvived = true;
       this.magmaAttack.clear(true, true);
+      this.lightAttack.clear(true, true);
       this.time.removeAllEvents();
       this.isNextLevelEnabled = true;
       this.showNextLevelArrow();

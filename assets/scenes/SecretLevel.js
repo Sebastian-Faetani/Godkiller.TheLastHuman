@@ -555,6 +555,8 @@ export default class Level1 extends Phaser.Scene {
     if (this.timer <= 0) {
       this.playerSurvived = true;
       this.magmaAttack.clear(true, true);
+      this.lightAttack.clear(true, true);
+      this.electricAttack.clear(true, true);
       this.time.removeAllEvents();
       this.isNextLevelEnabled = true;
       this.showNextLevelArrow();
