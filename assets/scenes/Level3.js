@@ -107,6 +107,14 @@ export default class Level1 extends Phaser.Scene {
 
     this.physics.add.overlap(
       this.player,
+      this.electricAttack,
+      this.characterHit.bind(this),
+      null,
+      this
+    );
+
+    this.physics.add.overlap(
+      this.player,
       this.nextLevelArrow,
       this.NextLevel,
       null,
