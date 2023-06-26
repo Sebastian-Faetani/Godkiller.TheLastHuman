@@ -75,11 +75,10 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio("level3Music", "./assets/images/level3Music.mp3");
     this.load.audio("secretLevelMusic", "./assets/images/secretLevelMusic.mp3");
 
+    this.load.video("preloaderCutscene", "./assets/images/preloaderCutscene.mp4");
+
     this.load.image("heartsSpriteFull", "./assets/images/heartsSpriteFull.png");
-    this.load.image(
-      "heartsSpriteOneLeft",
-      "./assets/images/heartsSpriteOneLeft.png"
-    );
+    this.load.image("heartsSpriteOneLeft", "./assets/images/heartsSpriteOneLeft.png");
     this.load.image("heartsSpriteDead", "./assets/images/heartsSpriteDead.png");
 
     this.load.image("exitButton", "./assets/images/exitButton.png");
@@ -164,6 +163,23 @@ export default class Preloader extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.scene.start("level2");
+    let preloaderCutscene = this.add.video(400, 300, "preloaderCutscene").setInteractive();
+
+    const scaleWidth = this.cameras.main.width / preloaderCutscene.width;
+    const scaleHeight = this.cameras.main.height / preloaderCutscene.height;
+    const scaleFactor = Math.min(scaleWidth, scaleHeight);
+
+    preloaderCutscene.setScale(scaleFactor);
+
+    preloaderCutscene.play() 
+
+    preloaderCutscene.on('complete', () => {
+      this.scene.start("menu");
+    });
+
+    preloaderCutscene.on('pointerdown', () => {
+      this.scene.start("menu");
+    });
+    
   }
 }
