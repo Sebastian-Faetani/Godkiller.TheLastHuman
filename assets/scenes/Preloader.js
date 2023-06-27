@@ -183,7 +183,7 @@ export default class Preloader extends Phaser.Scene {
     });
 
     preloaderCutscene.on('pointerdown', () => {
-      this.scene.start("level3");
+      this.scene.start("menu");
     });
     
   }
