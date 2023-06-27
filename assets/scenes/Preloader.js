@@ -76,6 +76,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio("secretLevelMusic", "./assets/images/secretLevelMusic.mp3");
 
     this.load.video("preloaderCutscene", "./assets/images/preloaderCutscene.mp4");
+    this.load.video("loreCutscene", "./assets/images/loreCutscene.mp4");
+    this.load.video("ending1Cutscene", "./assets/images/ending1Cutscene.mp4");
 
     this.load.image("heartsSpriteFull", "./assets/images/heartsSpriteFull.png");
     this.load.image("heartsSpriteOneLeft", "./assets/images/heartsSpriteOneLeft.png");
@@ -86,6 +88,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("deathScreen", "./assets/images/deathScreen.png");
 
     this.load.image("blackBars", "./assets/images/blackBarsOfShame.png");
+    this.load.image("blackBox", "./assets/images/blackBars.png");
 
     this.load.spritesheet("player", "./assets/images/playerSpriteSheet.png", {
       frameWidth: 390,
@@ -180,7 +183,7 @@ export default class Preloader extends Phaser.Scene {
     });
 
     preloaderCutscene.on('pointerdown', () => {
-      this.scene.start("menu");
+      this.scene.start("level3");
     });
     
   }

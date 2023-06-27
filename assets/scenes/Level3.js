@@ -221,8 +221,13 @@ export default class Level1 extends Phaser.Scene {
     //add next level arrow
     this.nextLevelArrow.create(675, 425, "nextLevelArrow");
     this.nextLevelArrow.setVisible(false);
-  }
 
+    //adding final anim
+    this.ending1 = this.add.video(400, 300, "ending1Cutscene").setInteractive().setDepth(1);
+    this.ending1.visible = false; 
+
+  }
+  
   update() {
     // Player Movement
     if (this.numLives <= 1) {
@@ -551,9 +556,25 @@ export default class Level1 extends Phaser.Scene {
   }
 
   NextLevel(player, nextLevelArrow) {
-    if (this.isNextLevelEnabled) {
-      this.level3Music.stop();
-      this.scene.start("menu");
+    if (!this.playerTouchedNextLevel) {
+      if (this.isNextLevelEnabled) {
+        this.level3Music.stop();
+        this.ending1.visible = true; 
+        this.ending1.play() 
+        this.ending1.on('complete', () => {
+          this.scene.start("menu");
+        });
+    }
+      this.playerTouchedNextLevel = true;
+      this.time.addEvent({
+        delay: 20000,
+        callback: () => {
+          this.playerTouchedNextLevel = false;
+        },
+        callbackScope: this,
+        loop: false,
+      });
+    
     }
   }
 

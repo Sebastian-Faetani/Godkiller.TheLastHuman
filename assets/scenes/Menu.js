@@ -10,7 +10,7 @@ export default class Menu extends Phaser.Scene {
     let creditsButton = this.add
       .image(690, 550, "creditsButton")
       .setInteractive();
-    let menuMusic = this.sound.add("menuMusic", { loop: true , volume: 0.15 });
+    let menuMusic = this.sound.add("menuMusic", { loop: true , volume: 0.13 });
     menuMusic.play();
     let helpScreen = this.add.video(400, 300, "helpScreen").setInteractive();
     let creditsScreen = this.add
@@ -19,6 +19,15 @@ export default class Menu extends Phaser.Scene {
     helpScreen.visible = false;
     creditsScreen.visible = false;
 
+    //black box
+    let blackBox = this.add.image(400, 300, "blackBox");
+    blackBox.visible = false;
+
+    //add lore video
+    let lore = this.add.video(400, 300, "loreCutscene").setInteractive();
+    lore.visible = false; 
+
+
     //Start button
     startButton.on("pointerover", () => {
       startButton.setTexture("buttonHover");
@@ -26,6 +35,15 @@ export default class Menu extends Phaser.Scene {
 
     startButton.on("pointerdown", () => {
       menuMusic.stop();
+      blackBox.visible = true;
+      lore.visible = true; 
+      lore.play() 
+      lore.on('complete', () => {
+        this.scene.start("level1");
+      });
+    });
+
+    lore.on('pointerdown', () => {
       this.scene.start("level1");
     });
 
