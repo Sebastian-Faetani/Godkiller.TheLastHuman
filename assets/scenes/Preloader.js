@@ -85,6 +85,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("retryButton", "./assets/images/retryButton.png");
     this.load.image("deathScreen", "./assets/images/deathScreen.png");
 
+    this.load.image("blackBars", "./assets/images/blackBarsOfShame.png");
+
     this.load.spritesheet("player", "./assets/images/playerSpriteSheet.png", {
       frameWidth: 390,
       frameHeight: 650,

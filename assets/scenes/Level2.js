@@ -20,6 +20,9 @@ export default class Level1 extends Phaser.Scene {
     let background = this.add.video(400, 300, "backGroundLvl2");
     background.play("loop");
 
+    //Added BlackBars
+    this.add.image(400, 594, "blackBars").setDepth(1);
+
     //add trainLook
     this.add.image(400, 386, "trainLookLvl2");
 
@@ -71,7 +74,7 @@ export default class Level1 extends Phaser.Scene {
     platforms.create(400, 279, "platform2Lvl2").refreshBody();
 
     //adding player
-    this.player = this.physics.add.sprite(400, 430, "player").setScale(0.1);
+    this.player = this.physics.add.sprite(400, 430, "player").setScale(0.1).setSize(335, 650);
     this.player.setCollideWorldBounds(true);
 
     this.player.anims.play("idle", true);
@@ -122,7 +125,7 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add timer on screen
-    this.timer = 15;
+    this.timer = 60;
     this.timerText = this.add.text(720, 50, this.timer, {
       fontSize: "64px",
       fontFamily: "impact",
@@ -138,7 +141,7 @@ export default class Level1 extends Phaser.Scene {
     this.arrowLeft.visible = false;
 
     //add music
-    this.level2Music = this.sound.add("level2Music", { loop: true , volume: 0.15 });
+    this.level2Music = this.sound.add("level2Music", { loop: true , volume: 0.09 });
     this.level2Music.play();
 
     //Create Mute button
@@ -162,16 +165,16 @@ export default class Level1 extends Phaser.Scene {
 
     //add lifes
     this.heartsEmpty = this.add
-      .image(100, 110, "heartsSpriteDead")
-      .setScale(0.14)
+      .image(100, 100, "heartsSpriteDead")
+      .setScale(0.16)
       .setDepth(1);
     this.heartsHalf = this.add
-      .image(100, 110, "heartsSpriteOneLeft")
-      .setScale(0.14)
+      .image(100, 100, "heartsSpriteOneLeft")
+      .setScale(0.16)
       .setDepth(1);
     this.heartsFull = this.add
-      .image(100, 110, "heartsSpriteFull")
-      .setScale(0.14)
+      .image(100, 100, "heartsSpriteFull")
+      .setScale(0.16)
       .setDepth(1);
 
     //add death screen and quit or restart
@@ -332,7 +335,7 @@ export default class Level1 extends Phaser.Scene {
   }
 
   startMagmaAttack(magma) {
-    const randomDuration = Phaser.Math.RND.between(700, 2000);
+    const randomDuration = Phaser.Math.RND.between(700, 1800);
     const startY = 680;
     const targetY = 300;
     const duration = randomDuration;
