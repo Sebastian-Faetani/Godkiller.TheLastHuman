@@ -564,10 +564,13 @@ export default class Level1 extends Phaser.Scene {
         this.ending1.on('complete', () => {
           this.scene.start("menu");
         });
+        this.ending1.on('pointerdown', () => {
+          this.scene.start("menu");
+        });
     }
       this.playerTouchedNextLevel = true;
       this.time.addEvent({
-        delay: 20000,
+        delay: 10000,
         callback: () => {
           this.playerTouchedNextLevel = false;
         },

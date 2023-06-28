@@ -78,6 +78,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.video("preloaderCutscene", "./assets/images/preloaderCutscene.mp4");
     this.load.video("loreCutscene", "./assets/images/loreCutscene.mp4");
     this.load.video("ending1Cutscene", "./assets/images/ending1Cutscene.mp4");
+    this.load.video("demonPactCutscene", "./assets/images/demonPactCutscene.mp4");
+    this.load.video("ending2Cutscene", "./assets/images/ending2Cutscene.mp4");
 
     this.load.image("heartsSpriteFull", "./assets/images/heartsSpriteFull.png");
     this.load.image("heartsSpriteOneLeft", "./assets/images/heartsSpriteOneLeft.png");

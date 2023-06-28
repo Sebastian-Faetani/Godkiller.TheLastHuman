@@ -217,6 +217,10 @@ export default class Level1 extends Phaser.Scene {
       .refreshBody();
     this.demon.anims.play("demonIdle", true);
     this.demon.setVisible(false);
+
+    //adding demon pact scene
+    this.demonPact = this.add.video(400, 300, "demonPactCutscene").setInteractive().setDepth(1);
+    this.demonPact.visible = false; 
   }
 
   update() {
@@ -470,10 +474,32 @@ export default class Level1 extends Phaser.Scene {
   }
 
   secretLevel(player, nextLevelArrow) {
-    if (this.isDemonEnabled) {
-      this.level2Music.stop();
-      this.scene.start("secretLevel");
+    if (!this.playerTouchedDemon) {
+      if (this.isDemonEnabled) {
+        this.level2Music.stop();
+        this.magmaAttack.clear(true, true);
+        this.lightAttack.clear(true, true);
+        this.time.removeAllEvents();
+        this.demonPact.visible = true; 
+        this.demonPact.play() 
+        this.demonPact.on('complete', () => {
+          this.scene.start("secretLevel");
+        });
+        this.demonPact.on('pointerdown', () => {
+          this.scene.start("secretLevel");
+        });
+      }
+      this.playerTouchedDemon = true;
+      this.time.addEvent({
+        delay: 10000,
+        callback: () => {
+          this.playerTouchedDemon = false;
+        },
+        callbackScope: this,
+        loop: false,
+      });
     }
+    
   }
 
   showNextLevelArrow() {
