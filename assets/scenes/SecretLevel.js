@@ -134,7 +134,7 @@ export default class Level1 extends Phaser.Scene {
     });
 
     //add timer on screen
-    this.timer = 5;
+    this.timer = 60;
     this.timerText = this.add.text(720, 50, this.timer, {
       fontSize: "64px",
       fontFamily: "impact",
