@@ -9,11 +9,17 @@ Imágenes del juego
 
 
 Link GDD: https://drive.google.com/file/d/1SeE_tinYsPDAWl6BxOdeYk6Ux5ieT2az/view?usp=drive_link
+
 Link TDD: https://drive.google.com/file/d/1C1SAGgO6jxi3xYYBifh6PyVT1cHSiRU9/view?usp=sharing
 
 Creditos de la música:
+
 menu: nakaradaalexander de Pixabay 
+
 nivel 1: StudioKolomna de Pixabay 
+
 nivel 2: Muzaproductions de Pixabay 
+
 nivel 3: AlexGrohl de Pixabay 
+
 nivel 4: AlexGrohl de Pixabay 
